@@ -1,33 +1,24 @@
 const INPUT: &str = include_str!("../assets/aoc25/day03/input.txt");
 const EXAMPLE: &str = include_str!("../assets/aoc25/day03/example.txt");
 
-fn parse(input: &str) -> Vec<Vec<u32>> {
+fn parse(input: &str) -> impl Iterator<Item = Vec<u32>> + '_ {
     input
         .lines()
         .map(|l: &str| l.chars().map(|c| c.to_digit(10).unwrap().into()).collect())
-        .collect()
 }
 
 fn part1(input: &str) -> u128 {
-    let nums = parse(input);
+    parse(input).map(|line| max_joltage(line, 2)).sum()
+}
 
-    let mut sum = 0;
-
-    for line in nums {
-        sum += max_joltage(line, 2);
-    }
-
-    return sum;
+fn part2(input: &str) -> u128 {
+    parse(input).map(|line| max_joltage(line, 12)).sum()
 }
 
 fn from_digits(digits: &Vec<u32>) -> u128 {
-    let mut num: u128 = 0;
-
-    for d in 0..digits.len() {
-        num = num * 10 + digits[d] as u128
-    }
-
-    return num;
+    (0..digits.len())
+        .into_iter()
+        .fold(0, |num, idx| num * 10 + digits[idx] as u128)
 }
 
 #[test]
@@ -85,18 +76,6 @@ fn test_max_joltage() {
     assert_eq!(987654321111, max_joltage(v1, 12));
     assert_eq!(811111111119, max_joltage(v2, 12));
     assert_eq!(434234234278, max_joltage(v3, 12));
-}
-
-fn part2(input: &str) -> u128 {
-    let nums = parse(input);
-
-    let mut sum = 0;
-
-    for num in nums {
-        sum += max_joltage(num, 12);
-    }
-
-    sum
 }
 
 #[test]
