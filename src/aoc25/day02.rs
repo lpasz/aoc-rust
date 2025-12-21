@@ -1,5 +1,5 @@
-const INPUT: &str = include_str!("../assets/aoc25/day02/input.txt");
-const EXAMPLE: &str = include_str!("../assets/aoc25/day02/example.txt");
+const INPUT: &str = include_str!("../../assets/aoc25/day02/input.txt");
+const EXAMPLE: &str = include_str!("../../assets/aoc25/day02/example.txt");
 
 fn parse(input: &str) -> Vec<(u64, u64)> {
     input
