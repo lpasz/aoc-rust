@@ -1,8 +1,5 @@
 use crate::core;
 
-const INPUT: &str = include_str!("../../assets/aoc25/day04/input.txt");
-const EXAMPLE: &str = include_str!("../../assets/aoc25/day04/example.txt");
-
 pub fn part1(input: &str) -> i32 {
     let mtx: Vec<Vec<char>> = input.lines().map(|l| l.chars().collect()).collect();
     let mut liftable_count = 0;
@@ -16,16 +13,6 @@ pub fn part1(input: &str) -> i32 {
     }
 
     liftable_count
-}
-
-#[test]
-fn part1_example() {
-    assert_eq!(part1(EXAMPLE), 13);
-}
-
-#[test]
-fn part1_input() {
-    assert_eq!(part1(INPUT), 1502);
 }
 
 pub fn part2(input: &str) -> i32 {
@@ -49,19 +36,33 @@ pub fn part2(input: &str) -> i32 {
     liftable_count
 }
 
-#[test]
-fn part2_example() {
-    assert_eq!(part2(EXAMPLE), 43);
-}
-
-#[test]
-fn part2_input() {
-    assert_eq!(part2(INPUT), 9083);
-}
-
 fn rolls_around(mtx: &[Vec<char>], (x, y): (usize, usize)) -> usize {
     core::around((x, y))
         .filter_map(|(nx, ny)| mtx.get(ny)?.get(nx))
         .filter(|&c| *c == '@')
         .count()
+}
+
+#[test]
+fn part1_example() {
+    let example = include_str!("../../assets/aoc25/day04/example.txt");
+    assert_eq!(part1(example), 13);
+}
+
+#[test]
+fn part1_input() {
+    let input = include_str!("../../assets/aoc25/day04/input.txt");
+    assert_eq!(part1(input), 1502);
+}
+
+#[test]
+fn part2_example() {
+    let example = include_str!("../../assets/aoc25/day04/example.txt");
+    assert_eq!(part2(example), 43);
+}
+
+#[test]
+fn part2_input() {
+    let input = include_str!("../../assets/aoc25/day04/input.txt");
+    assert_eq!(part2(input), 9083);
 }

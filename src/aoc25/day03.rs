@@ -1,6 +1,3 @@
-const INPUT: &str = include_str!("../../assets/aoc25/day03/input.txt");
-const EXAMPLE: &str = include_str!("../../assets/aoc25/day03/example.txt");
-
 pub fn part1(input: &str) -> u128 {
     max_joltage_with_n_batteries(input, 2)
 }
@@ -44,20 +41,28 @@ fn max_joltage(line: &str, number_of_batteries_to_pick: usize) -> u128 {
 
 #[test]
 fn part1_example() {
-    assert_eq!(part1(EXAMPLE), 357);
+    let example = include_str!("../../assets/aoc25/day03/example.txt");
+
+    assert_eq!(part1(example), 357);
 }
 
 #[test]
 fn part1_input() {
-    assert_eq!(part1(INPUT), 17193);
+    let input = include_str!("../../assets/aoc25/day03/input.txt");
+
+    assert_eq!(part1(input), 17193);
 }
 
 #[test]
 fn part2_example() {
-    assert_eq!(part2(EXAMPLE), 3121910778619);
+    let example = include_str!("../../assets/aoc25/day03/example.txt");
+
+    assert_eq!(part2(example), 3121910778619);
 }
 
 #[test]
 fn part2_input() {
-    assert_eq!(part2(INPUT), 171297349921310);
+    let input = include_str!("../../assets/aoc25/day03/input.txt");
+
+    assert_eq!(part2(input), 171297349921310);
 }

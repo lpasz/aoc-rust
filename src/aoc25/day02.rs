@@ -1,6 +1,3 @@
-const INPUT: &str = include_str!("../../assets/aoc25/day02/input.txt");
-const EXAMPLE: &str = include_str!("../../assets/aoc25/day02/example.txt");
-
 fn parse(input: &str) -> Vec<(u64, u64)> {
     input
         .split(&[',', '-'])
@@ -92,20 +89,24 @@ pub fn part2(input: &str) -> u64 {
 
 #[test]
 fn part1_example() {
-    assert_eq!(part1(EXAMPLE), 1227775554);
+    let example = include_str!("../../assets/aoc25/day02/example.txt");
+    assert_eq!(part1(example), 1227775554);
 }
 
 #[test]
 fn part1_input() {
-    assert_eq!(part1(INPUT), 20223751480);
+    let input = include_str!("../../assets/aoc25/day02/input.txt");
+    assert_eq!(part1(input), 20223751480);
 }
 
 #[test]
 fn part2_example() {
-    assert_eq!(part2(EXAMPLE), 4174379265);
+    let example = include_str!("../../assets/aoc25/day02/example.txt");
+    assert_eq!(part2(example), 4174379265);
 }
 
 #[test]
 fn part2_input() {
-    assert_eq!(part2(INPUT), 30260171216);
+    let input = include_str!("../../assets/aoc25/day02/input.txt");
+    assert_eq!(part2(input), 30260171216);
 }

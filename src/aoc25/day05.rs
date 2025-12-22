@@ -1,8 +1,5 @@
 use std::ops::RangeInclusive;
 
-const INPUT: &str = include_str!("../../assets/aoc25/day05/input.txt");
-const EXAMPLE: &str = include_str!("../../assets/aoc25/day05/example.txt");
-
 fn parse(input: &str) -> (Vec<RangeInclusive<u128>>, Vec<u128>) {
     let (fresh_ids, ids) = input.split_once("\n\n").unwrap();
 
@@ -76,20 +73,24 @@ pub fn part2(input: &str) -> u128 {
 
 #[test]
 fn part1_example() {
-    assert_eq!(part1(EXAMPLE), 3);
+    let example = include_str!("../../assets/aoc25/day05/example.txt");
+    assert_eq!(part1(example), 3);
 }
 
 #[test]
 fn part1_input() {
-    assert_eq!(part1(INPUT), 733);
+    let input = include_str!("../../assets/aoc25/day05/input.txt");
+    assert_eq!(part1(input), 733);
 }
 
 #[test]
 fn part2_example() {
-    assert_eq!(part2(EXAMPLE), 14);
+    let example = include_str!("../../assets/aoc25/day05/example.txt");
+    assert_eq!(part2(example), 14);
 }
 
 #[test]
 fn part2_input() {
-    assert_eq!(part2(INPUT), 345821388687084);
+    let input = include_str!("../../assets/aoc25/day05/input.txt");
+    assert_eq!(part2(input), 345821388687084);
 }

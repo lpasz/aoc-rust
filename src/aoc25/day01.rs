@@ -1,6 +1,3 @@
-const INPUT: &str = include_str!("../../assets/aoc25/day01/input.txt");
-const EXAMPLE: &str = include_str!("../../assets/aoc25/day01/example.txt");
-
 fn parse(input: &str) -> Vec<(char, i32)> {
     input
         .lines()
@@ -84,20 +81,24 @@ impl Dial {
 
 #[test]
 fn part1_example() {
-    assert_eq!(part1(EXAMPLE), 3);
+    let example = include_str!("../../assets/aoc25/day01/example.txt");
+    assert_eq!(part1(example), 3);
 }
 
 #[test]
 fn part1_input() {
-    assert_eq!(part1(INPUT), 1064);
+    let input = include_str!("../../assets/aoc25/day01/input.txt");
+    assert_eq!(part1(input), 1064);
 }
 
 #[test]
 fn part2_example() {
-    assert_eq!(part2(EXAMPLE), 6);
+    let example = include_str!("../../assets/aoc25/day01/example.txt");
+    assert_eq!(part2(example), 6);
 }
 
 #[test]
 fn part2_input() {
-    assert_eq!(part2(INPUT), 6122);
+    let input = include_str!("../../assets/aoc25/day01/input.txt");
+    assert_eq!(part2(input), 6122);
 }
