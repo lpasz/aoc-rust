@@ -14,8 +14,8 @@ pub fn right((x, y): (usize, usize)) -> Option<(usize, usize)> {
     Some((x + 1, y))
 }
 
-pub fn around(point: (usize, usize)) -> Vec<(usize, usize)> {
-    vec![
+pub fn around(point: (usize, usize)) -> impl Iterator<Item = (usize, usize)> {
+    [
         up(point),
         down(point),
         left(point),
@@ -27,5 +27,4 @@ pub fn around(point: (usize, usize)) -> Vec<(usize, usize)> {
     ]
     .into_iter()
     .flatten()
-    .collect()
 }

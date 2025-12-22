@@ -1,11 +1,11 @@
 const INPUT: &str = include_str!("../../assets/aoc25/day03/input.txt");
 const EXAMPLE: &str = include_str!("../../assets/aoc25/day03/example.txt");
 
-fn part1(input: &str) -> u128 {
+pub fn part1(input: &str) -> u128 {
     max_joltage_with_n_batteries(input, 2)
 }
 
-fn part2(input: &str) -> u128 {
+pub fn part2(input: &str) -> u128 {
     max_joltage_with_n_batteries(input, 12)
 }
 

@@ -60,7 +60,7 @@ fn digits(n: u64) -> u32 {
     }
 }
 
-fn part1(input: &str) -> u64 {
+pub fn part1(input: &str) -> u64 {
     let pairs = parse(input);
     let mut sum = 0;
 
@@ -75,7 +75,7 @@ fn part1(input: &str) -> u64 {
     return sum;
 }
 
-fn part2(input: &str) -> u64 {
+pub fn part2(input: &str) -> u64 {
     let pairs = parse(input);
     let mut sum = 0;
 

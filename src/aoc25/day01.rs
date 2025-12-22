@@ -13,7 +13,7 @@ fn parse(input: &str) -> Vec<(char, i32)> {
         .collect()
 }
 
-fn part1(input: &str) -> i32 {
+pub fn part1(input: &str) -> i32 {
     let turns = parse(input);
 
     let mut dial = Dial::default();
@@ -24,7 +24,7 @@ fn part1(input: &str) -> i32 {
     return dial.finished_at_zero;
 }
 
-fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> i32 {
     let turns = parse(input);
 
     let mut dial = Dial::default();
