@@ -28,3 +28,13 @@ pub fn around(point: (usize, usize)) -> impl Iterator<Item = (usize, usize)> {
     .into_iter()
     .flatten()
 }
+
+pub fn transpose<T: Clone>(matrix: Vec<Vec<T>>) -> Vec<Vec<T>> {
+    let col_count = matrix[0].len();
+    (0..col_count)
+        .map(|i| matrix.iter().map(|row| row[i].clone()).collect())
+        .collect()
+}
+pub fn from_digits(digits: Vec<u32>) -> u128 {
+    digits.into_iter().fold(0, |num, d| num * 10 + d as u128)
+}
