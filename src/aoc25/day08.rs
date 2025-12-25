@@ -1,92 +1,81 @@
 use std::collections::HashSet;
 
+type Point = (usize, usize, usize);
+
 fn junction_boxes(input: &str) -> Vec<Point> {
     input
         .lines()
+        .filter(|l| !l.is_empty())
         .map(|l| {
-            l.split(',')
-                .map(|n| n.parse().unwrap())
-                .collect::<Vec<usize>>()
+            let n: Vec<usize> = l.split(',').map(|s| s.trim().parse().unwrap()).collect();
+            (n[0], n[1], n[2])
         })
-        .map(|l| (l[0], l[1], l[2]))
         .collect()
 }
 
-type Point = (usize, usize, usize);
+fn euclidean_distance(p1: Point, p2: Point) -> usize {
+    let dx = (p1.0 as i64 - p2.0 as i64).pow(2);
+    let dy = (p1.1 as i64 - p2.1 as i64).pow(2);
+    let dz = (p1.2 as i64 - p2.2 as i64).pow(2);
+    ((dx + dy + dz) as f64).sqrt() as usize
+}
 
-fn euclidean_distance((x1, y1, z1): Point, (x2, y2, z2): Point) -> usize {
-    let xmin = x1.min(x2);
-    let ymin = y1.min(y2);
-    let zmin = z1.min(z2);
+fn get_sorted_distances(jbs: &[Point]) -> Vec<(usize, Point, Point)> {
+    let mut distances = Vec::with_capacity((jbs.len() * (jbs.len() - 1)) / 2);
+    for (idx, &p1) in jbs.iter().enumerate() {
+        for &p2 in jbs.iter().skip(idx + 1) {
+            distances.push((euclidean_distance(p1, p2), p1, p2));
+        }
+    }
+    distances.sort_unstable_by_key(|d| d.0);
+    distances
+}
 
-    let xmax = x1.max(x2);
-    let ymax = y1.max(y2);
-    let zmax = z1.max(z2);
+fn connect_points(sets: &mut Vec<HashSet<Point>>, p1: Point, p2: Point) {
+    let mut first_match = None;
+    let mut second_match = None;
 
-    let x = xmax - xmin;
-    let y = ymax - ymin;
-    let z = zmax - zmin;
+    for (i, set) in sets.iter().enumerate() {
+        if set.contains(&p1) || set.contains(&p2) {
+            if first_match.is_none() {
+                first_match = Some(i);
+            } else {
+                second_match = Some(i);
+                break;
+            }
+        }
+    }
 
-    let sum = x.pow(2) + y.pow(2) + z.pow(2);
-    sum.isqrt()
+    match (first_match, second_match) {
+        (Some(i), Some(j)) => {
+            let s2 = sets.remove(i.max(j));
+            let mut s1 = sets.remove(i.min(j));
+            s1.extend(s2);
+            sets.push(s1);
+        }
+        (Some(i), None) => {
+            sets[i].insert(p1);
+            sets[i].insert(p2);
+        }
+        (None, None) => {
+            let mut new_set = HashSet::new();
+            new_set.insert(p1);
+            new_set.insert(p2);
+            sets.push(new_set);
+        }
+        _ => {}
+    }
 }
 
 pub fn part1(input: &str, take_n: usize) -> usize {
     let jbs = junction_boxes(input);
+    let distances = get_sorted_distances(&jbs);
+    let mut sets: Vec<HashSet<Point>> = Vec::new();
 
-    let mut distances = vec![];
-
-    for (idx, jb1) in jbs.iter().enumerate() {
-        for jb2 in jbs.iter().skip(idx + 1) {
-            let distance = euclidean_distance(*jb1, *jb2);
-            distances.push((distance, jb1, jb2));
-        }
-    }
-
-    distances.sort_unstable_by_key(|d| d.0);
-
-    let mut sets: Vec<HashSet<Point>> = vec![];
     for (_, p1, p2) in distances.into_iter().take(take_n) {
-        // Encontramos quais sets atuais contêm p1 ou p2
-        let mut first_match = None;
-        let mut second_match = None;
-
-        // Procuramos de trás para frente (removendo os sets que vamos fundir)
-        for (i, set) in sets.iter().enumerate() {
-            if set.contains(&p1) || set.contains(&p2) {
-                if first_match.is_none() {
-                    first_match = Some(i);
-                } else {
-                    second_match = Some(i);
-                    break;
-                }
-            }
-        }
-
-        match (first_match, second_match) {
-            (Some(i), Some(j)) => {
-                // remove in order, to not cause shift on the other one
-                let s2 = sets.remove(i.max(j));
-                // remove the lowest after, this avoids shift
-                let mut s1 = sets.remove(i.min(j));
-                s1.extend(s2);
-                sets.push(s1);
-            }
-            (Some(i), None) => {
-                sets[i].insert(*p1);
-                sets[i].insert(*p2);
-            }
-            (None, None) => {
-                let mut new_set = HashSet::new();
-                new_set.insert(*p1);
-                new_set.insert(*p2);
-                sets.push(new_set);
-            }
-            _ => {}
-        }
+        connect_points(&mut sets, p1, p2);
     }
 
-    // 3. Resultado final (Igual ao Elixir)
     let mut sizes: Vec<usize> = sets.iter().map(|s| s.len()).collect();
     sizes.sort_unstable_by(|a, b| b.cmp(a));
     sizes.iter().take(3).product()
@@ -94,68 +83,17 @@ pub fn part1(input: &str, take_n: usize) -> usize {
 
 pub fn part2(input: &str) -> usize {
     let jbs = junction_boxes(input);
+    let mut distances = get_sorted_distances(&jbs);
+    let mut sets: Vec<HashSet<Point>> = jbs.iter().map(|&p| [p].into_iter().collect()).collect();
 
-    let mut distances = vec![];
-
-    for (idx, jb1) in jbs.iter().enumerate() {
-        for jb2 in jbs.iter().skip(idx + 1) {
-            let distance = euclidean_distance(*jb1, *jb2);
-            distances.push((distance, jb1, jb2));
-        }
-    }
-
-    distances.sort_unstable_by_key(|d| d.0);
-
-    let mut sets: Vec<HashSet<Point>> = vec![];
-    for jb in &jbs {
-        let mut s = HashSet::new();
-        s.insert(*jb);
-        sets.push(s);
-    }
-
-    for (_d, p1, p2) in distances.drain(..) {
-        let mut first_match = None;
-        let mut second_match = None;
-
-        for (i, set) in sets.iter().enumerate() {
-            if set.contains(&p1) || set.contains(&p2) {
-                if first_match.is_none() {
-                    first_match = Some(i);
-                } else {
-                    second_match = Some(i);
-                    break;
-                }
-            }
-        }
-
-        match (first_match, second_match) {
-            (Some(i), Some(j)) => {
-                // remove in order, to not cause shift on the other one
-                let s2 = sets.remove(i.max(j));
-                // remove the lowest after, this avoids shift
-                let mut s1 = sets.remove(i.min(j));
-                s1.extend(s2);
-                sets.push(s1);
-            }
-            (Some(i), None) => {
-                sets[i].insert(*p1);
-                sets[i].insert(*p2);
-            }
-            (None, None) => {
-                let mut new_set = HashSet::new();
-                new_set.insert(*p1);
-                new_set.insert(*p2);
-                sets.push(new_set);
-            }
-            _ => {}
-        }
+    for (_, p1, p2) in distances.drain(..) {
+        connect_points(&mut sets, p1, p2);
 
         if sets.len() == 1 {
             return p1.0 * p2.0;
         }
     }
-
-    return 0;
+    0
 }
 
 #[test]
