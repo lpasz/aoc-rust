@@ -25,8 +25,8 @@ pub fn part1(input: &str) -> usize {
 type Point = (usize, usize);
 type LineSegment = (Point, Point);
 enum Intersection {
-    Touch(Point),
-    Cross(Point),
+    Touch,
+    Cross,
     Parallel,
     NoIntersection,
 }
@@ -35,6 +35,14 @@ fn intersect_at_point(
     ((x1, y1), (x2, y2)): LineSegment,
     ((x3, y3), (x4, y4)): LineSegment,
 ) -> Intersection {
+    let x1 = x1 as f32;
+    let y1 = y1 as f32;
+    let x2 = x2 as f32;
+    let y2 = y2 as f32;
+    let x3 = x3 as f32;
+    let y3 = y3 as f32;
+    let x4 = x4 as f32;
+    let y4 = y4 as f32;
     let dx1 = x2 - x1;
     let dy1 = y2 - y1;
     let dx2 = x4 - x3;
@@ -42,19 +50,21 @@ fn intersect_at_point(
 
     let den = dx1 * dy2 - dy1 * dx2;
 
-    if den == 0 {
+    if den == 0.0 {
         return Intersection::Parallel;
     }
 
     let t = ((x3 - x1) * dy2 - (y3 - y1) * dx2) / den;
     let u = ((x3 - x1) * dy1 - (y3 - y1) * dx1) / den;
 
-    if t > 0 && t < 1 && u > 0 && u < 1 {
-        return Intersection::Cross((x1 + t * dx1, y1 + t * dy1));
+    if t > 0.0 && t < 1.0 && u > 0.0 && u < 1.0 {
+        return Intersection::Cross;
     }
 
-    if (t == 0 || t == 1 || u == 0 || u == 1) && (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-        return Intersection::Touch((x1 + t * dx1, y1 + t * dy1));
+    if (t == 0.0 || t == 1.0 || u == 0.0 || u == 1.0)
+        && (t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0)
+    {
+        return Intersection::Touch;
     } else {
         return Intersection::NoIntersection;
     }
@@ -62,27 +72,33 @@ fn intersect_at_point(
 
 fn lines_cross(linseg1: LineSegment, linseg2: LineSegment) -> bool {
     match intersect_at_point(linseg1, linseg2) {
-        Intersection::Cross(_) => true,
+        Intersection::Cross => true,
+        // Intersection::Touch => true,
         _ => false,
     }
 }
 
-pub fn part2(input: &str) -> i32 {
+pub fn part2(input: &str) -> Option<usize> {
     let points = parse_points(input);
 
     let mut areas = vec![];
-    for (idx, p1) in points.iter().enumerate() {
-        for p2 in points.iter().skip(idx + 1) {
-            areas.push((p1, p2, rectangle(*p1, *p2)));
+    for idx in 0..points.len() {
+        for idx2 in idx + 1..points.len() {
+            areas.push((
+                points[idx],
+                points[idx2],
+                rectangle(points[idx], points[idx2]),
+            ));
         }
     }
 
-    areas.sort_unstable_by_key(|d| d.2).rev();
+    areas.sort_unstable_by_key(|d| d.2);
+    areas.reverse();
 
-    let shifted: Vec<_> = points[1..].iter().collect();
+    let mut shifted: Vec<&Point> = points[1..].iter().collect();
     shifted.push(&points[0]);
 
-    let edges = points.iter().zip(shifted).collect();
+    let edges: Vec<(&Point, &Point)> = points.iter().zip(shifted).collect();
 
     areas.iter().find_map(|((x1, y1), (x2, y2), area)| {
         let p1 = (*x1, *y1);
@@ -90,19 +106,26 @@ pub fn part2(input: &str) -> i32 {
         let p3 = (*x2, *y2);
         let p4 = (*x2, *y1);
 
-        for linseg2 in edges {
-            if !lines_cross((p1, p2), linseg2)
-                && !lines_cross((p2, p3), linseg2)
-                && !lines_cross((p3, p4), linseg2)
-                && !lines_cross((p4, p1), linseg2)
-                && !lines_cross((p1, p3), linseg2)
-                && !lines_cross((p2, p4), linseg2)
-            {
-                return Some(area);
-            }
+        let any_crossed = edges
+            .iter()
+            .flat_map(|(lsp1, lsp2)| {
+                [
+                    lines_cross((p1, p2), (**lsp1, **lsp2)),
+                    lines_cross((p2, p3), (**lsp1, **lsp2)),
+                    lines_cross((p3, p4), (**lsp1, **lsp2)),
+                    lines_cross((p4, p1), (**lsp1, **lsp2)),
+                    lines_cross((p1, p3), (**lsp1, **lsp2)),
+                    lines_cross((p2, p4), (**lsp1, **lsp2)),
+                ]
+            })
+            .any(|crossed| crossed);
+
+        if any_crossed {
+            None
+        } else {
+            Some(area.clone())
         }
-        None
-    });
+    })
 }
 
 fn rectangle(p1: Point, p2: Point) -> usize {
@@ -114,23 +137,23 @@ fn rectangle(p1: Point, p2: Point) -> usize {
 #[test]
 fn part1_example() {
     let example = include_str!("../../assets/aoc25/day09/example.txt");
-    assert_eq!(part1(example), 3);
+    assert_eq!(part1(example), 50);
 }
 
 #[test]
 fn part1_input() {
     let input = include_str!("../../assets/aoc25/day09/input.txt");
-    assert_eq!(part1(input), 1064);
+    assert_eq!(part1(input), 4746238001);
 }
 
 #[test]
 fn part2_example() {
     let example = include_str!("../../assets/aoc25/day09/example.txt");
-    assert_eq!(part2(example), 6);
+    assert_eq!(part2(example).unwrap(), 24);
 }
 
 #[test]
 fn part2_input() {
     let input = include_str!("../../assets/aoc25/day09/input.txt");
-    assert_eq!(part2(input), 6122);
+    assert_eq!(part2(input).unwrap(), 1552139370);
 }
